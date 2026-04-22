@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIOL 1110 Lab Blueprint</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg1: #082147; --bg2: #041225; --panel: rgba(8, 29, 58, 0.88);
+      --panel-border: rgba(214, 233, 255, 0.18); --line: rgba(228, 240, 255, 0.92);
+      --muted: #a9bfda; --accent: #dff0ff; --shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+    }
+    html, body { margin: 0; min-height: 100%; font-family: Arial, Helvetica, sans-serif; color: var(--line);
+      background:
+        linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(180deg, var(--bg1), var(--bg2) 70%);
+      background-size: 24px 24px, 24px 24px, cover; }
+    .app { display: grid; grid-template-columns: 320px 1fr; min-height: 100vh; }
+    .sidebar { background: rgba(3,15,31,0.75); border-right: 1px solid rgba(223,240,255,0.14); padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .eyebrow { margin: 0 0 6px; text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.72rem; color: var(--muted); }
+    h1, h2, h3, h4 { margin-top: 0; }
+    h1 { font-size: 1.9rem; margin-bottom: 10px; }
+    .copy, .muted, li, p { color: var(--muted); line-height: 1.55; }
+    .lab-list { display: grid; gap: 10px; margin-top: 18px; }
+    .lab-tile { text-align: left; border: 1px solid rgba(223,240,255,0.12); background: rgba(255,255,255,0.03); color: var(--line); border-radius: 16px; padding: 14px; display: grid; gap: 4px; cursor: pointer; width: 100%; }
+    .lab-tile.selected { border-color: rgba(223,240,255,0.42); background: rgba(223,240,255,0.08); }
+    .lab-week { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); }
+    .lab-title { font-size: 0.98rem; font-weight: 600; color: var(--line); }
+    .lab-date { font-size: 0.88rem; color: var(--muted); }
+    main { padding: 24px; }
+    .card { position: relative; overflow: hidden; border-radius: 24px; border: 1px solid var(--panel-border); background: var(--panel); box-shadow: var(--shadow); margin-bottom: 18px; }
+    .hero { min-height: 220px; }
+    .card-inner { position: relative; z-index: 2; padding: 28px; }
+    .hero h2 { font-size: clamp(2rem, 4vw, 3.2rem); margin-bottom: 10px; }
+    .pill, .tag, .btn { display: inline-flex; align-items: center; border: 1px solid rgba(223,240,255,0.22); background: rgba(223,240,255,0.08); padding: 8px 12px; border-radius: 999px; color: var(--accent); font-size: 0.86rem; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .grid { display: grid; gap: 18px; margin-bottom: 18px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .panel { padding: 22px; }
+    ul { padding-left: 20px; margin-bottom: 0; }
+    .blueprint-grid { position: absolute; inset: 0; z-index: 1; opacity: 0.5;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+      background-size: 24px 24px, 24px 24px, 96px 96px, 96px 96px; }
+    .step-flow { display: grid; gap: 14px; }
+    .step-card, .question { border: 1px solid rgba(223,240,255,0.16); border-radius: 18px; padding: 16px; background: rgba(255,255,255,0.025); }
+    .step-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .step-index { font-size: 0.8rem; letter-spacing: 0.12em; color: var(--accent); }
+    .rule { height: 1px; background: rgba(223,240,255,0.18); flex: 1; }
+    .subtitle { color: var(--accent); font-size: 0.92rem; margin: 0 0 8px; }
+    .question p:first-child { color: var(--accent); font-weight: 700; }
+    .options { display: grid; gap: 8px; }
+    .option { display: flex; gap: 10px; align-items: flex-start; }
+    .feedback { margin-top: 12px; padding: 12px 14px; border-radius: 14px; font-size: 0.95rem; }
+    .correct { background: rgba(107,255,175,0.08); border: 1px solid rgba(107,255,175,0.16); }
+    .incorrect { background: rgba(255,169,169,0.08); border: 1px solid rgba(255,169,169,0.16); }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    button.btn { cursor: pointer; color: var(--line); }
+    .score { margin-top: 12px; display: inline-flex; padding: 12px 14px; border-radius: 14px; background: rgba(223,240,255,0.08); border: 1px solid rgba(223,240,255,0.18); color: var(--accent); font-weight: 600; }
+    @media (max-width: 1100px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { position: relative; height: auto; border-right: none; border-bottom: 1px solid rgba(223,240,255,0.14); }
+      .grid.two, .grid.three { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <p class="eyebrow">Spring 2026</p>
+      <h1>BIOL 1110 Lab Blueprint</h1>
+      <p class="copy">Manual-driven lab companion with blueprint-style concept support and short lab checks.</p>
+      <div id="labList" class="lab-list"></div>
+    </aside>
+    <main><div id="content"></div></main>
+  </div>
+  <script>
+    const labs = [
+      { week: 1, labNumber: null, title: "No Lab", dates: "Jan. 19", material: "MLK Holiday, No Lab", status: "break" },
+      { week: 2, labNumber: 1, title: "Introduction to Course Syllabus & Lab Safety", dates: "Jan. 26", material: "Introduction to Course Syllabus & Lab Safety, McGraw Hill Connect Set-up", status: "placeholder" },
+      { week: 3, labNumber: 2, title: "Scientific Method", dates: "Feb. 2", material: "Scientific Method and Supplement", status: "active" },
+      { week: 4, labNumber: 3, title: "Understanding Biochemical Tests", dates: "Feb. 9", material: "pH, Acids, Bases, and Buffers Supplement", status: "placeholder" },
+      { week: 5, labNumber: 4, title: "Microscopy", dates: "Feb. 16", material: "Microscopy only", status: "placeholder" },
+      { week: 6, labNumber: 5, title: "Chemical Composition of Cells", dates: "Feb. 23", material: "Chemical Composition of Cells: Proteins, Carbohydrates and Lipids", status: "placeholder" },
+      { week: 7, labNumber: 6, title: "Cell Structure and Function", dates: "Mar. 2", material: "Cell Structure and Function", status: "placeholder" },
+      { week: 8, labNumber: null, title: "No Lab", dates: "Mar. 9", material: "Spring Break, No Labs Meet", status: "break" },
+      { week: 9, labNumber: 7, title: "Diffusion and Osmosis", dates: "Mar. 16", material: "Diffusion and Osmosis", status: "placeholder" },
+      { week: 10, labNumber: null, title: "No Lab", dates: "Mar. 23", material: "Academic Festival Week, No Labs Meet", status: "break" },
+      { week: 11, labNumber: 8, title: "How Enzymes Function", dates: "Mar. 30", material: "How Enzymes Function", status: "placeholder" },
+      { week: 12, labNumber: 9, title: "Aerobic Cellular Respiration", dates: "Apr. 6", material: "Aerobic Cellular Respiration", status: "placeholder" },
+      { week: 13, labNumber: 10, title: "Photosynthesis", dates: "Apr. 13", material: "Photosynthesis", status: "placeholder" },
+      { week: 14, labNumber: 11, title: "Mitosis", dates: "Apr. 20", material: "Mitosis", status: "placeholder" },
+      { week: 15, labNumber: 12, title: "Meiosis / Strawberry DNA Extraction", dates: "Apr. 27", material: "Meiosis / Strawberry DNA Extraction", status: "placeholder" },
+      { week: 16, labNumber: 13, title: "Patterns of Inheritance: Mendelian Genetics", dates: "May 4", material: "Patterns of Inheritance: Mendelian Genetics", status: "placeholder" }
+    ];
+    const steps = [
+      ["Observation", "What students do in the manual", "Observe pillbug movement and behavior before testing anything."],
+      ["Measurement", "Collect basic data", "Measure the speed of three pillbugs and calculate average speed in cm/sec."],
+      ["Hypothesis", "Predict the outcome", "Choose dry and wet substances, include controls, and predict +, −, or 0."],
+      ["Experiment", "Test one substance at a time", "Rinse and dry the pillbug between trials, then record each response carefully."],
+      ["Conclusion", "Interpret the results", "Decide whether the hypothesis was supported and explain how controls affect the conclusion."]
+    ];
+    const questions = [
+      { prompt: "What is the main role of a control in the pillbug experiment?", options: ["To make the pillbug move faster", "To provide a comparison so the tested substance can be evaluated", "To guarantee the hypothesis is correct", "To replace the need for repeated trials"], correct: 1, explanation: "A control provides a baseline for comparison so students can judge whether the pillbug responded differently to a tested substance." },
+      { prompt: "In this lab, the substance being tested is the:", options: ["Dependent variable", "Control variable", "Independent variable", "Conclusion"], correct: 2, explanation: "The independent variable is the factor being changed or tested." },
+      { prompt: "The pillbug's observed response (+, −, or 0) is the:", options: ["Dependent variable", "Independent variable", "Theory", "Control"], correct: 0, explanation: "The response is the measured result, so it is the dependent variable." }
+    ];
+    let selectedWeek = 3, answers = {}, showFeedback = false;
+    function renderLabList() {
+      const list = document.getElementById("labList");
+      list.innerHTML = "";
+      labs.forEach(lab => {
+        const btn = document.createElement("button");
+        btn.className = "lab-tile" + (lab.week === selectedWeek ? " selected" : "");
+        btn.innerHTML = '<span class="lab-week">Week ' + lab.week + '</span><span class="lab-title">' + (lab.labNumber ? ('Lab ' + lab.labNumber + ': ' + lab.title) : lab.title) + '</span><span class="lab-date">' + lab.dates + '</span>';
+        btn.onclick = () => { selectedWeek = lab.week; answers = {}; showFeedback = false; render(); };
+        list.appendChild(btn);
+      });
+    }
+    function hero(eyebrow, title, copy, pills) {
+      return '<section class="card hero"><div class="blueprint-grid"></div><div class="card-inner"><p class="eyebrow">' + eyebrow + '</p><h2>' + title + '</h2><p class="copy">' + copy + '</p><div class="row">' + pills.map(p => '<span class="pill">' + p + '</span>').join("") + '</div></div></section>';
+    }
+    function renderPlaceholder(lab) {
+      return hero('Lab ' + lab.labNumber, lab.title, lab.material, ['Placeholder Module']) +
+      '<section class="grid two"><article class="card panel"><h3>Planned Layout</h3><ul><li>Main blueprint study plate for the lab’s central concept</li><li>2–3 inset views or mini studies</li><li>Short concept notes tied to the purchased manual</li><li>Quick self-check items for in-class use</li></ul></article><article class="card panel"><h3>Integration Plan</h3><ul><li>Manual = what students do</li><li>Blueprint = what students understand</li><li>Lab Check = what gets graded</li></ul></article></section>';
+    }
+    function renderBreak(lab) {
+      return hero('Week ' + lab.week, lab.title, lab.material, ['No Module Needed']);
+    }
+    function renderLab2() {
+      const qHtml = questions.map((q, i) => {
+        const selected = answers[i];
+        const options = q.options.map((opt, idx) => '<label class="option"><input type="radio" name="q' + i + '" ' + (selected === idx ? 'checked' : '') + ' onchange="selectAnswer(' + i + ',' + idx + ')"><span>' + opt + '</span></label>').join("");
+        let feedback = "";
+        if (showFeedback && selected !== undefined) {
+          const ok = selected === q.correct;
+          feedback = '<div class="feedback ' + (ok ? 'correct' : 'incorrect') + '">' + (ok ? 'Correct.' : 'Not quite.') + ' ' + q.explanation + '</div>';
+        }
+        return '<div class="question"><p>' + (i + 1) + '. ' + q.prompt + '</p><div class="options">' + options + '</div>' + feedback + '</div>';
+      }).join("");
+      const score = questions.reduce((n, q, i) => n + (answers[i] === q.correct ? 1 : 0), 0);
+      const allAnswered = questions.every((_, i) => answers[i] !== undefined);
+      return hero('Lab 2 · Week 3', 'Scientific Method', 'Pillbug behavior lab companion that ties the purchased lab manual to a blueprint-style concept review.', ['Manual + Blueprint + Lab Check', 'Active module']) +
+      '<section class="grid three"><article class="card panel"><h3>Manual → Do</h3><ul><li>Observe pillbug motion and behavior.</li><li>Measure speed for three pillbugs.</li><li>Record hypotheses in Tables 1.2 and 1.3.</li><li>Complete conclusion and review questions.</li></ul></article><article class="card panel"><h3>Blueprint → Understand</h3><ul><li>Identify independent and dependent variables.</li><li>Explain the role of controls.</li><li>Interpret attraction, repulsion, or no response.</li><li>Connect data to hypothesis and conclusion.</li></ul></article><article class="card panel"><h3>Lab Check → Demonstrate</h3><ul><li>Define hypothesis vs. conclusion.</li><li>Identify the control and explain why it matters.</li><li>State independent and dependent variables.</li><li>Use observations to explain one response.</li></ul></article></section>' +
+      '<section class="grid two"><article class="card panel"><div class="row" style="justify-content:space-between;align-items:center;margin-bottom:14px;"><h3 style="margin:0;">Scientific Method Blueprint</h3><span class="tag">Study Plate</span></div><div class="step-flow">' +
+      steps.map((s, idx) => '<div class="step-card"><div class="step-top"><span class="step-index">0' + (idx + 1) + '</span><span class="rule"></span></div><h4>' + s[0] + '</h4><p class="subtitle">' + s[1] + '</p><p>' + s[2] + '</p></div>').join("") +
+      '</div></article><article class="card panel"><div class="row" style="justify-content:space-between;align-items:center;margin-bottom:14px;"><h3 style="margin:0;">Lab 2 Check</h3><span class="tag">Auto-feedback Demo</span></div><div class="step-card" style="margin-bottom:18px;"><h4>Short graded-style check</h4><ol><li>What is a hypothesis, and how is it different from a conclusion?</li><li>What was the control in your pillbug experiment, and why is it important?</li><li>What were the independent and dependent variables?</li><li>Based on your observations, did the pillbug show attraction, repulsion, or no response to one substance?</li></ol></div><h4>Quick Blueprint Practice</h4>' +
+      qHtml +
+      '<div class="controls"><button class="btn" onclick="showAnswers()">Show Feedback</button><button class="btn" onclick="resetQuiz()">Reset</button></div>' +
+      (showFeedback && allAnswered ? '<div class="score">Score: ' + score + ' / ' + questions.length + '</div>' : '') +
+      '</article></section><section class="grid two"><article class="card panel"><h3>Manual Alignment</h3><ul><li>Observation: pillbug motion and body features</li><li>Measurement: speed, time, and average speed</li><li>Hypothesis tables with dry and wet controls</li><li>Experimental response tables and conclusion questions</li><li>Laboratory Review items on control, data, theory, and conclusion</li></ul></article><article class="card panel"><h3>Instructor Notes</h3><ul><li>Use this module during class while students work in the manual.</li><li>Keep the app focused on concepts, not full worksheet replacement.</li><li>Later, expand the quick-check area into a scored submission or completion code.</li></ul></article></section>';
+    }
+    function render() {
+      renderLabList();
+      const lab = labs.find(l => l.week === selectedWeek);
+      const content = document.getElementById("content");
+      if (lab.status === "break") content.innerHTML = renderBreak(lab);
+      else if (lab.labNumber === 2) content.innerHTML = renderLab2();
+      else content.innerHTML = renderPlaceholder(lab);
+    }
+    function selectAnswer(q, a) { answers[q] = a; render(); }
+    function showAnswers() { showFeedback = true; render(); }
+    function resetQuiz() { answers = {}; showFeedback = false; render(); }
+    window.selectAnswer = selectAnswer; window.showAnswers = showAnswers; window.resetQuiz = resetQuiz;
+    render();
+  </script>
+</body>
+</html>
